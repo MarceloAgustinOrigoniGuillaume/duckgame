@@ -12,6 +12,10 @@ private:
     int actual_x;   // cppcheck-suppress unusedStructMember
     int actual_y;   // cppcheck-suppress unusedStructMember
     int step;       // cppcheck-suppress unusedStructMember
+    int jump_step;  // cppcheck-suppress unusedStructMember
+    int actual_jump_step;  // cppcheck-suppress unusedStructMember
+    int actual_fall_step;  // cppcheck-suppress unusedStructMember
+    //float time; // cppcheck-suppress unusedStructMember
 
 public:
     Coordinates(int x, int y);
@@ -21,6 +25,8 @@ public:
     void move_right();
     void move_left();
     void jump();
+    void update_position_y();
+    void update_time();
 };
 
 
