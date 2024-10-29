@@ -33,6 +33,7 @@ public:
     void move_left();
     void stay_down();
     void jump();
+    void update_position_y();
 };
 
 
