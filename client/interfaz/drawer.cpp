@@ -3,6 +3,7 @@
 Drawer::Drawer(SDL2pp::Window& window, Animation& animation, const GameContext& gameContext,
                Camera& camera):
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
+        window(window),
         textures(renderer),
         animation(animation),
         camera(camera),
@@ -48,14 +49,37 @@ int Drawer::getWeaponFlip(SDL_RendererFlip flip) {
     return flip == SDL_FLIP_HORIZONTAL ? FLIP : UNFLIP;
 }
 
-void Drawer::drawBackground() {
-    int scaledWidth = camera.backgroundScaledSize(SCREEN_WIDTH);
-    int scaledHeight = camera.backgroundScaledSize(SCREEN_HEIGHT);
+void Drawer::drawMap() {
+    Map map;
 
-    renderer.Copy(textures.getTexture(TextureType::BACKGROUND),
-                  SDL2pp::Rect((SCREEN_WIDTH - scaledWidth) / 2, (SCREEN_HEIGHT - scaledHeight) / 2,
-                               scaledWidth, scaledHeight),
-                  SDL2pp::Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
+    map.drawBackground(*this);
+    map.drawBlocks(*this);
+    map.drawDecorations(*this);
+    map.drawSpawnPlayers(*this);
+    map.drawSpawnWeapons(*this);
+}
+
+void Drawer::drawBackground(MapObjectData mapObject) {
+    auto [windowWidth, windowHeight] = window.GetSize();
+
+    int scaledWidth = camera.backgroundScaledSize(windowWidth);
+    int scaledHeight = camera.backgroundScaledSize(windowHeight);
+
+    renderer.Copy(textures.getMapTexture(mapObject.texture),
+                SDL2pp::Rect(
+                    (windowWidth - scaledWidth) / 2,
+                    (windowHeight - scaledHeight) / 2,
+                    scaledWidth,
+                    scaledHeight
+                ),
+                SDL2pp::Rect(0, 0, windowWidth, windowHeight));
+}
+
+void Drawer::drawMapObject(MapObjectData mapObject) {
+    renderer.Copy(
+            textures.getMapTexture(mapObject.texture), SDL2pp::Rect(0, 0, 16, 16),
+            SDL2pp::Rect(camera.getScreenX(mapObject.column * 16), camera.getScreenY(mapObject.row * 16),
+                            camera.getScaledSize(16), camera.getScaledSize(16)));
 }
 
 void Drawer::drawObjects(const MatchDto& matchDto) {
@@ -92,7 +116,7 @@ void Drawer::draw(const MatchDto& matchDto) {
     renderer.SetDrawColor(255, 255, 255, 255);  // White background
     renderer.Clear();
 
-    drawBackground();
+    drawMap();
 
     drawObjects(matchDto);
 

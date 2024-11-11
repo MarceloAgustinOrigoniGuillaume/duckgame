@@ -3,10 +3,10 @@
 UILoop::UILoop(ActionListener& dtoSender, SimpleEventListener& _events,
                const GameContext& gameContext):
         sdlLib(SDL_INIT_VIDEO),
-        window("DuckGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-               SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE),
+        window("DuckGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, INITIAL_SCREEN_WIDTH,
+               INITIAL_SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE),
         animation(gameContext),
-        camera(),
+        camera(window),
         drawer(window, animation, gameContext, camera),
         eventHandler(dtoSender, gameContext),
         matchDtoQueue(_events),

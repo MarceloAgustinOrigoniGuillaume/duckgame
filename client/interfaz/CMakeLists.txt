@@ -7,6 +7,7 @@ target_sources(taller_client
     event_handler.cpp
     drawer.cpp
     camera.cpp
+    map.cpp
     
     PUBLIC
     # .h files
@@ -16,4 +17,5 @@ target_sources(taller_client
     event_handler.h
     drawer.h
     camera.h
+    map.h
     )

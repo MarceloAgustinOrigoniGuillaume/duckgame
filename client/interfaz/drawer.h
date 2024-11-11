@@ -10,6 +10,7 @@
 #include "animation.h"
 #include "camera.h"
 #include "texture_container.h"
+#include "map.h"
 
 #define SPRITE_WIDTH 32
 #define SPRITE_HEIGHT 32
@@ -23,6 +24,8 @@
 class Drawer {
 private:
     SDL2pp::Renderer renderer;
+
+    SDL2pp::Window& window;
 
     TextureContainer textures;
 
@@ -38,9 +41,14 @@ private:
 
     int getWeaponFlip(SDL_RendererFlip flip);
 
-    void drawBackground();
+    void drawMap();
+
+    void drawBackground(MapObjectData mapObject);
+    void drawMapObject(MapObjectData mapObject);
+    friend class Map;
 
     void drawObjects(const MatchDto& matchDto);
+    
 
 public:
     Drawer(SDL2pp::Window& window, Animation& animation, const GameContext& gameContext,
