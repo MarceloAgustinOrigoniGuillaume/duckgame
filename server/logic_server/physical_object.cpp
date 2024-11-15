@@ -109,7 +109,7 @@ Tuple PhysicalObject::get_position() { return position; }
 
 void PhysicalObject::get_real_position(int& x, int& y) {
     x = position.x;
-    y = -position.y;
+    y = position.y;
 }
 
 Tuple PhysicalObject::get_dimension() { return dimension; }
