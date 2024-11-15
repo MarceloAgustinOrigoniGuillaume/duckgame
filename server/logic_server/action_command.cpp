@@ -6,7 +6,7 @@ ActionCommand::ActionCommand(PlayerActionDTO action_, MatchLogic* match_logic_):
         action(action_), match_logic(match_logic_) {}
 
 void ActionCommand::execute() {
-    if (action.type == PlayerActionType::NONE){
+    /*if (action.type == PlayerActionType::NONE){
         std::cout<< "NONE" <<std::endl;
     }
     if (action.type == PlayerActionType::JUMP){
@@ -23,7 +23,7 @@ void ActionCommand::execute() {
     }
     if (action.type == PlayerActionType::MOVE_RIGHT_END){
         std::cout<< "MOVE_RIGHT_END" <<std::endl;
-    }
+    }*/
 
     match_logic->execute_move_command(action.type, action.playerind);
 }

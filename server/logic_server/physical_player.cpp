@@ -37,8 +37,6 @@ void PhysicalPlayer::update_action(TypeMoveAction& move_action) {
 }
 
 
-
-
 void PhysicalPlayer::react_to_sides_collision(bool is_player, int id_player){
     if (!is_player) {
         speed.x = 0;
