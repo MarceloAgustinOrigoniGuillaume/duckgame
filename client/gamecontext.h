@@ -5,7 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "common/clientprotocol.h"
 #include "common/dtosmap.h"
+
+#define MAP_BLOCK_UNIT 16
+
 
 struct GameContext {
     unsigned int id_lobby;  // cppcheck-suppress unusedStructMember
@@ -17,10 +21,7 @@ struct GameContext {
     uint8_t second_player;  // cppcheck-suppress unusedStructMember
 
 
-    std::string map_background;    // cppcheck-suppress unusedStructMember
-    int map_width;                 // cppcheck-suppress unusedStructMember
-    int map_height;                // cppcheck-suppress unusedStructMember
-    std::vector<BlockDTO> blocks;  // cppcheck-suppress unusedStructMember
+    struct MapData map;  // cppcheck-suppress unusedStructMember
 
     uint8_t cantidadjugadores;  // No hace falta? El dto match lo dira
 
@@ -30,8 +31,7 @@ struct GameContext {
             dualplay(true),
             first_player(1),
             second_player(2),
-            map_width(50),
-            map_height(20),
+            map(),
             cantidadjugadores(4) {}
 };
 

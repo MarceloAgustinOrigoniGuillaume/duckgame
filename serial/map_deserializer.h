@@ -24,8 +24,37 @@
 #include "common/dtosmap.h"
 
 
+/*
+void EditorWindow::importFromFileSystem() {
+    MapDeserializer deserial("./res/maps/map3.yaml");
+
+    const std::string background = serial.getBackground();
+
+    const std::vector<MapObjectData> blocks = serial.getBlocks();
+    const std::vector<MapObjectData> spawnPlayers = serial.getPlayerSpawns();
+    const std::vector<MapObjectData> spawnWeapons = serial.getItemSpawns();
+    const std::vector<MapObjectData> boxes = serial.getBoxes();
+    const std::vector<MapObjectData> decorations = serial.getDecorations();
+}
+struct MapObjectData {
+    int row;
+    int column;
+    int zIndex;
+    MapObjectType mapObjectType;
+    std::string texture;
+};
+enum MapObjectType {
+    Block,
+    SpawnPlayer,
+    SpawnWeapon,
+    Box,
+    Decoration
+};
+*/
 class MapDeserializer {
 protected:
+    std::string srcmap;  // cppcheck-suppress unusedStructMember
+
     ryml::Tree tree;  // cppcheck-suppress unusedStructMember
     ryml::NodeRef root;
 
@@ -41,14 +70,30 @@ public:
     MapDeserializer(MapDeserializer&&) = delete;
     MapDeserializer& operator=(MapDeserializer&&) = delete;
 
-    void dosome();
+    const std::string& getMapName() const;
 
-    struct MapPoint readSize();
-    uint8_t readBackground();
+
+    // Loadings inplace for data.
+    void readSize(struct MapPoint& size);
+    void readBackground(std::string& background);
+
+    void readBlocksZ(uint16_t& blocks_z);
+
+    void readBoxesZ(uint16_t& boxes_z);
+    void readBoxesTexture(std::string& box_tex);
+
+    void readTextures(std::vector<std::string>& out);
 
     void readBlocks(std::vector<struct BlockDTO>& out);
+    void readDecorations(std::vector<struct DecorationDTO>& out);
+
     void readPlayerSpawns(std::vector<struct MapPoint>& out);
     void readItemSpawns(std::vector<struct MapPoint>& out);
     void readBoxes(std::vector<struct MapPoint>& out);
+
+
+    // General methods que encapsulan multiples acciones.
+    void loadMapInfo(struct MapInfo& info);
+    void loadObjectsInfo(struct ObjectsInfo& info);
 };
 #endif

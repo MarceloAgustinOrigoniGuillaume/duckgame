@@ -4,13 +4,19 @@
 
 #include "./gameerror.h"
 
-Match::Match(lobbyID _id): id(_id), players(), looper(), connectedplayers(0), map(NULL) {}
+Match::Match(lobbyID _id): id(_id), players(), looper(), connectedplayers(0), map() {}
 
 
 // Protected// friend accessed methods
 ControlledPlayer& Match::addPlayers(uint8_t count) {
-    connectedplayers++;  // Solo importa la cantidad de conectados
-    return players.add(count);
+    ControlledPlayer& player = players.add(count);
+
+    // Se suma despues porque el add puede fallar!
+    // Por capacidad o por que esta cancelada!
+    connectedplayers++;  // Solo importa la cantidad de conectados...
+
+
+    return player;
 }
 int Match::playercount() const { return players.playercount(); }
 
@@ -33,10 +39,28 @@ void Match::init(MapLoader& maps, const char* mapname) {
     if (is_alive()) {
         throw GameError(LOBBY_ALREADY_STARTED, "Tried to start a match already started!!\n");
     }
-    map = &maps.loadMap(mapname);
-    looper.add_objects(*map);
+    MapDeserializer& deserial = maps.getLoader(mapname);
+
+    deserial.loadMapInfo(map);
+
+    // Notify/start players. Ya podrian enviar la info del mapa.
     looper.start_players(players);
     players.finishLobbyMode();
+
+
+    // Carga info para el server
+    struct ObjectsInfo objects;
+
+    deserial.loadObjectsInfo(objects);
+
+    // Se podria hacer un merge de bloques! A la forma greedy
+    objects.blocks.reserve(map.blocks.size());
+    for (const struct BlockDTO& block: map.blocks) {
+        objects.blocks.emplace_back(block.pos.x, block.pos.y);
+    }
+
+    looper.add_objects(objects);
+
     start();
     // match_start.notify_all();
 }
@@ -53,6 +77,9 @@ bool Match::hostLobbyLeft(ControlledPlayer& host) {
 
     return false;
 }
+
+void Match::cancelByError(LobbyErrorType error) { players.cancelByError(error); }
+
 
 // General/public methods.
 
@@ -79,15 +106,11 @@ void Match::run() {
 
 bool Match::isrunning() const { return _is_alive; }
 
-MapInfo* Match::getMap() { return map; }
+const MapInfo& Match::getMap() const { return map; }
 
 
 void Match::finish(MapLoader& maps) {
-
-    if (map != NULL) {
-        maps.removeMap(map->mapname);
-        map = NULL;
-    }
+    maps.removeLoader(map.map_id);
 
     if (_keep_running) {
         stop();

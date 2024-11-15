@@ -9,10 +9,41 @@
 #include <utility>
 #include <vector>
 
+#include "./dtosobject.h"
 #include "common/core/protocol.h"
 #include "common/dtosgame.h"
 #include "common/dtoslobby.h"
-#include "common/dtosmap.h"
+
+// Mas que MapObject, DrawableObject.
+struct MapObject {
+    int row;
+    int column;
+    int zIndex;
+
+    const std::string& texture;
+    uint16_t ind_texture;
+
+    MapObject(const int x, const int y, const uint16_t z, const std::string& tex,
+              const uint16_t ind):
+            row(y), column(x), zIndex(z), texture(tex), ind_texture(ind) {}
+};
+
+struct MapData {
+    int width;   // cppcheck-suppress unusedStructMember
+    int height;  // cppcheck-suppress unusedStructMember
+
+    uint16_t blocks_z;  // cppcheck-suppress unusedStructMember
+    uint16_t boxes_z;   // cppcheck-suppress unusedStructMember
+
+    std::string background;  // cppcheck-suppress unusedStructMember
+    std::string boxes_tex;   // cppcheck-suppress unusedStructMember
+
+    std::vector<std::string> textures;      // cppcheck-suppress unusedStructMember
+    std::vector<struct MapObject> objects;  // cppcheck-suppress unusedStructMember
+
+    MapData(): width(0), height(0), blocks_z(0), boxes_z(0) {}
+};
+
 
 // Extension del protocolo base a usar.
 class ClientProtocol {
@@ -41,12 +72,14 @@ public:
 
     void recvlobbyinfo(lobby_info& out);
 
-    void sendlobbyaction(const lobby_action&& action);
+    void sendlobbyaction(const lobby_action& action);
+    void sendmapname(const std::string& mapname);
 
     void sendaction(PlayerActionDTO& action);
 
     MatchDto recvstate();
-    struct MapPoint recvmap(uint8_t* background, std::vector<BlockDTO>& out);
+
+    void recvmapdata(struct MapData& data, const int unit);
 
     bool isopen();
     void close();

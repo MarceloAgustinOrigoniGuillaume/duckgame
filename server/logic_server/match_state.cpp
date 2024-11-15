@@ -3,18 +3,20 @@
 
 #include <iostream>
 #include <utility>
+
+#include "common/clock.h"
 MatchState::MatchState(): running(false), match_logic(), acciones(match_logic) {}
 
 void MatchState::pushAction(const PlayerActionDTO& action) { acciones.push_command(action); }
 
 void MatchState::loop(MatchObserver& observer) {
     // start_players(observer);
-
-
+    Clock clock(30);  // 16ms sleep == 60 frames por segundo aprox. 30 = 30 fps
+    clock.resetnext();
     while (running) {
         this->step();
         this->send_results(observer);
-        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        clock.tick();
     }
 }
 
@@ -59,12 +61,10 @@ void MatchState::send_results(MatchObserver& observer) {
     MatchDto dto = MatchDto(INICIADA, 1);
     match_logic.get_dtos(dto.players, dto.objects);
     observer.updateState(dto);
-
 }
 
-void MatchState::add_objects(const struct MapInfo& map_info){
-    match_logic.add_boxes(map_info.boxes);
-    match_logic.add_items(map_info.spawns_items);
+void MatchState::add_objects(const struct ObjectsInfo& objects_info) {
+    match_logic.add_boxes(objects_info.boxes);
 }
 
 MatchState::~MatchState() {}

@@ -13,9 +13,10 @@
 #include "animation.h"
 #include "camera.h"
 #include "drawer.h"
+#include "sound_manager.h"
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define INITIAL_SCREEN_WIDTH 640
+#define INITIAL_SCREEN_HEIGHT 480
 #define FRAME_DELAY 16
 
 class UILoop {
@@ -23,6 +24,8 @@ private:
     SDL2pp::SDL sdlLib;
 
     SDL2pp::Window window;
+
+    SoundManager soundManager;
 
     Animation animation;
 

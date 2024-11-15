@@ -68,7 +68,7 @@ void MenuHandler::onJoinDuoLobby(int lobbyId) {
 
 void MenuHandler::onStartLobby(const std::string& map) {
     std::cout << "Empeza con el mapa: " << map << std::endl;
-    sender->notifyStart();
+    sender->notifyStart(map);
 }
 
 void MenuHandler::onCancelLobby() {  // Cuando el Host da click en el boton de cancel en lugar de
@@ -87,6 +87,7 @@ MenuHandler::~MenuHandler() {}
 
 // Acciones a menu...
 void MenuHandler::setLobbyId(int lobbyId) { queueToMenu.push(MenuAction::SetLobbyId(lobbyId)); }
+void MenuHandler::setLobbyMaps(const std::vector<std::string>& maps) { queueToMenu.push(MenuAction::SetLobbyMaps(maps)); }
 
 void MenuHandler::addSoloToLobby() { queueToMenu.push(MenuAction::AddSoloToLobby()); }
 void MenuHandler::addDuoToLobby() { queueToMenu.push(MenuAction::AddDuoToLobby()); }
@@ -127,11 +128,15 @@ void MenuHandler::playerLeftLobby(int id) {
 void MenuHandler::createdLobbyDual(unsigned int id_lobby) {
     std::cout << "Lobby creada dual con id " << id_lobby << std::endl;
     setLobbyId(id_lobby);
+    std::vector<std::string> maps = {"Mapa1", "Mapa2", "Mapa3"};
+    setLobbyMaps(maps);
     addDuoToLobby();
 }
 void MenuHandler::createdLobbySolo(unsigned int id_lobby) {
     std::cout << "Lobby creada solo con id " << id_lobby << std::endl;
     setLobbyId(id_lobby);
+    std::vector<std::string> maps = {"Mapa1", "Mapa2", "Mapa3"};
+    setLobbyMaps(maps);
     addSoloToLobby();
 }
 

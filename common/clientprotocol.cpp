@@ -6,6 +6,7 @@
 
 #include "common/core/liberror.h"
 
+
 ClientProtocol::ClientProtocol(Messenger& conn): protocol(conn) {}
 
 
@@ -51,32 +52,61 @@ uint8_t ClientProtocol::recvIDDualPlayer(uint8_t* player1) {
 }
 
 
-void ClientProtocol::sendlobbyaction(const lobby_action&& action) {
-    protocol.sendbyte(action.type);
-}
+void ClientProtocol::sendlobbyaction(const lobby_action& action) { protocol.sendbyte(action.type); }
+void ClientProtocol::sendmapname(const std::string& mapname) { protocol.sendmsg(mapname); }
 
+void ClientProtocol::recvmapdata(struct MapData& data, const int unit) {
+    data.width = protocol.recvuint();
+    data.height = protocol.recvuint();
 
-struct MapPoint ClientProtocol::recvmap(uint8_t* background, std::vector<BlockDTO>& out) {
-    coordinate_t width = protocol.recvuint();
-    coordinate_t height = protocol.recvuint();
+    // Recv constant z inds.
+    data.blocks_z = protocol.recvshort();
+    data.boxes_z = protocol.recvshort();
 
-    *background = protocol.recvbyte();
+    // Recv constant 'textures'/'resources'
+    data.background = protocol.recvmsgstr();
+    data.boxes_tex = protocol.recvmsgstr();
 
-    // Read blocks
-    int block_count = protocol.recvuint();
-    out.reserve(block_count);
+    // Populate textures to load.
+    int count_textures = protocol.recvuint();
+    data.textures.reserve(count_textures);
+    while (count_textures > 0) {
+        data.textures.push_back(protocol.recvmsgstr());
+        count_textures--;
+    }
 
-    while (block_count > 0) {
+    // Read sizes.
+    int count_blocks = protocol.recvuint();
+    int count_decorations = protocol.recvuint();
+
+    data.objects.reserve(count_blocks + count_decorations);
+
+    while (count_blocks > 0) {
         coordinate_t _x = protocol.recvuint();
         coordinate_t _y = protocol.recvuint();
 
-        out.emplace_back(_x, _y, (BlockTexture)protocol.recvbyte());
+        uint8_t ind_tex = protocol.recvbyte();
 
-        block_count--;
+        data.objects.emplace_back(unit * _x, (data.height - _y * unit)  //*unit // Inverti!
+                                  ,
+                                  data.blocks_z, data.textures[ind_tex], ind_tex);
+
+        count_blocks--;
     }
 
+    while (count_decorations > 0) {
+        coordinate_t _x = protocol.recvuint();
+        coordinate_t _y = protocol.recvuint();
+        uint8_t ind_tex = protocol.recvbyte();
 
-    return MapPoint(width, height);
+        uint8_t _z = protocol.recvshort();
+
+        data.objects.emplace_back(unit * _x, (data.height - _y * unit)  //*unit //Inverti!
+                                  ,
+                                  _z, data.textures[ind_tex], ind_tex);
+
+        count_decorations--;
+    }
 }
 
 

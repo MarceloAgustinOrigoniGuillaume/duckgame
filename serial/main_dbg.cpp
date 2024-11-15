@@ -4,21 +4,23 @@
 #include "./map_deserializer.h"
 #include "./map_loader.h"
 #include "./map_serializer.h"
+#include "common/clock.h"
 
-static void deserial(const std::string& file) {
-    MapDeserializer serial(file);
-    serial.dosome();
-}
 static void create(const std::string& file) {
 
     MapSerializer serial(100, 550);
     std::string name("NAME");
+    std::string name1("OT");
+    std::string name2("LAS");
 
     for (int i = 0; i < 50; i += 3) {
         serial.addBlock(2, 3 + i, name);
     }
+    for (int i = 0; i < 25; i += 3) {
+        serial.addBlock(5 + i, 3 + i, name1);
+    }
     for (int i = 50; i < 100; i += 3) {
-        serial.addDecoration(2, 3 + i, name);
+        serial.addDecoration(2, 3 + i, 2, name2);
     }
 
     serial.addBox(4, 3);
@@ -26,10 +28,13 @@ static void create(const std::string& file) {
     serial.addBox(6, 4);
     serial.addBox(7, 3);
 
-    serial.addItemSpawn(12, 3);
-    serial.addItemSpawn(99, 3);
-    serial.addPlayerSpawn(14, 3);
-    serial.addPlayerSpawn(23, 3);
+    std::string pl = "playswp";
+
+    serial.addItemSpawn(12, 3, pl);
+    serial.addItemSpawn(99, 3, pl);
+
+    serial.addPlayerSpawn(14, 3, pl);
+    serial.addPlayerSpawn(23, 3, pl);
 
     serial.save(file);
 }
@@ -39,37 +44,60 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // std::string file("res/maps/");
-    // file.append(argv[1]);
-    //  create(file);
+    Clock clock(30);
+    clock.resetnow();
+    std::string file("res/maps/");
+    file.append(argv[1]);
+    file.append(".yaml");
+    create(file);
+    int ms = clock.measure();
+
+
+    std::cout << "--->TOOK " << ms << "ms? create " << file << std::endl;
+
+
     //  deserial(file);
 
     std::cout << "ACT UPON " << argv[1] << std::endl;
-    MapLoader loader;
 
-    const MapInfo& info = loader.loadMap(argv[1]);
-    const MapInfo& info2 = loader.loadMap(argv[1]);
+    clock.resetnext();
+
+    MapLoader loader;
+    MapInfo info;
+    ObjectsInfo info2;
+
+    MapDeserializer& load1 = loader.getLoader(argv[1]);
+    MapDeserializer& load2 = loader.getLoader(argv[1]);
+
+    load1.loadMapInfo(info);
+    load2.loadObjectsInfo(info2);
+
+
+    clock.tick();
+    clock.tick();
+    clock.tick();
+    clock.tick();
+
+    std::cout << "TICK COUNT AFTER IS " << clock.tickcount() << std::endl;
 
     std::cout << "MAP 1 SIZE IS " << info.size.x << " , " << info.size.y
-              << " BACKGROUND: " << (int)(info.bk) << std::endl;
-    std::cout << "MAP 2 SIZE IS " << info2.size.x << " , " << info2.size.y
-              << " BACKGROUND: " << (int)(info2.bk) << std::endl;
+              << " BACKGROUND: " << (info.background) << " z bl: " << (int)(info.blocks_z)
+              << std::endl;
+    std::cout << "Map 1 block count " << info.blocks.size() << std::endl;
 
-    std::cout << "Map 1 player count " << info.spawns_player.size() << std::endl;
-
-    for (const struct MapPoint& point: info.spawns_player) {
-        std::cout << "Player spawn at " << point.x << " , " << point.y << std::endl;
+    for (const std::string& tex: info.textures) {
+        std::cout << "tex = " << tex << std::endl;
     }
 
-    std::cout << "Map 2 item spawn count " << info2.spawns_items.size() << std::endl;
+    std::cout << "Map 2 item spawn count " << info2.item_spawns.size() << std::endl;
 
-    for (const struct MapPoint& point: info2.spawns_items) {
+    for (const struct MapPoint& point: info2.item_spawns) {
         std::cout << "Item spawn at " << point.x << " , " << point.y << std::endl;
     }
 
-    loader.removeMap(info.mapname);
-    std::cout << "DELETED MAP 1 " << info.mapname << std::endl;
-    loader.removeMap(info2.mapname);
+    loader.removeLoader(info.map_id);
+    std::cout << "DELETED MAP 1 " << info.map_id << std::endl;
+    loader.removeLoader(load2.getMapName());
 
 
     return 0;

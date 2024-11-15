@@ -2,19 +2,22 @@
 
 UILoop::UILoop(ActionListener& dtoSender, SimpleEventListener& _events,
                const GameContext& gameContext):
-        sdlLib(SDL_INIT_VIDEO),
-        window("UILOOP demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-               SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE),
-        animation(gameContext),
-        camera(),
+        sdlLib(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
+        window("DuckGame", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, INITIAL_SCREEN_WIDTH,
+               INITIAL_SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE),
+        soundManager(),
+        animation(gameContext, soundManager),
+        camera(window),
         drawer(window, animation, gameContext, camera),
-        eventHandler(dtoSender, gameContext),
+        eventHandler(dtoSender, gameContext, soundManager),
         matchDtoQueue(_events),
         lastUpdate(),
         isRunning_(true) {}
 
 void UILoop::exec() {
     try {
+        soundManager.playBackgroundMusic();
+
         while (isRunning_) {
             unsigned int frameStart = SDL_GetTicks();
 
