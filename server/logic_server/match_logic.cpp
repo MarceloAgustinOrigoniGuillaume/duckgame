@@ -208,10 +208,10 @@ void MatchLogic::update_bullets(){
             if (impacted_player) {
                 this->damage_player(id_player);
             }
-            std::cout << "ERASING BULLET !!\n";
+
             bullet = bullets.erase(bullet);
         } else {
-            std::cout << "MOVING BULLET !!\n";
+            std::cout << "bullet x: " << bullet->get_position().x <<" bullet y: " << bullet->get_position().y << std::endl;
             bullet->move(colition_map);
             ++bullet;
         }
