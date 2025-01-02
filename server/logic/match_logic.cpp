@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#define DMG_EXPLOSION 10
 
 MatchLogic::MatchLogic(const Configuration& _configs): colition_map(100, 100), configs(_configs) {
     this->command_map[PlayerActionType::NONE] = [this](int index) {
@@ -375,10 +376,10 @@ void MatchLogic::add_bullet(Bullet bullet){
     this->bullets.push_back(bullet);
 }
 
-void MatchLogic::damage_player(int id) {
+void MatchLogic::damage_player(int id, int dmg) {
     for (Player& player: players) {
         if (player.same_id(id)) {
-            player.take_damage(configs.base_dmg);
+            player.take_damage(configs.base_dmg * dmg);
             return;
         }
     }
@@ -416,8 +417,8 @@ void MatchLogic::damage_box(int id,std::vector<GameEvent>& events) {
     , 2*configs.explosion_radius, 2*configs.explosion_radius, dmg_players);
                     
                     for(Collision& hitted_player: dmg_players){
-                         std::cout << "---> BOMB HITTED PLAYER " << hitted_player.id << std::endl;
-                         damage_player(hitted_player.id);
+                         //std::cout << "---> BOMB HITTED PLAYER " << hitted_player.id << std::endl;
+                         damage_player(hitted_player.id, DMG_EXPLOSION);
                     }
                     
                     it = boxes.erase(it);
@@ -444,7 +445,7 @@ void MatchLogic::update_bullets(std::vector<GameEvent>& events){
         bullet->get_data(impacted, collision.type, collision.id);
         if (impacted) {
             if (collision.type == CollisionTypeMap::PLAYER) {
-                this->damage_player(collision.id);
+                this->damage_player(collision.id, bullet->get_dmg());
             }
             if (collision.type == CollisionTypeMap::BOX) {
                 this->damage_box(collision.id,events);

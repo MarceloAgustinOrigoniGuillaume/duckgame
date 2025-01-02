@@ -7,6 +7,7 @@
 
 #define KNOCK_BACK_DURATION 4
 #define KNOCK_BACK_MOMENTUM 20
+#define DMG_MULTIPLIER 6 // podria ser configurable. Por ahora no se considera especialmente util.
 
 MagnumWeapon::MagnumWeapon(int base_ammo): ammo(6*base_ammo), bullet_range(20){}
 
@@ -25,7 +26,7 @@ bool MagnumWeapon::shoot(ShootingDirection direction, std::vector <Bullet> &bull
     if (ammo > 0){
         std::srand(std::time(nullptr));
         int dispersion_index = -2 + std::rand() % 5;
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player));
+        bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE,id_player,DMG_MULTIPLIER);
         if (direction == ShootingDirection::UP){
             player.add_speed(0, -20);
             bullets.back().shoot_up();

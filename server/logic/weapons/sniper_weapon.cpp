@@ -3,6 +3,8 @@
 #include <ctime>
 #include <iostream>
 
+#define DMG_MULTIPLIER 12 // podria ser configurable. Por ahora no se considera especialmente util.
+
 SniperWeapon::SniperWeapon(int base_ammo): ammo(2 * base_ammo), charging_time(2),
         init_charging_time(0), final_charging_time(0),charged(false), bullet_range(64){};
 
@@ -17,7 +19,7 @@ SoundEventType SniperWeapon::shoot_sound() const{
 
 void SniperWeapon::shoot_sniper(ShootingDirection direction, std::vector<Bullet> &bullets,
                                Tuple bullet_position, int id_player, std::vector<SoundEventType> &player_sounds){
-    bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player));
+    bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player,DMG_MULTIPLIER);
 
     if (direction == ShootingDirection::UP){
         bullets.back().shoot_up();

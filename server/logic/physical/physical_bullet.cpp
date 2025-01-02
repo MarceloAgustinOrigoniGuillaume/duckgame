@@ -1,6 +1,10 @@
 
 #include "physical_bullet.h"
 #include <iostream>
+
+#define BULLET_SPEED 8 // podria ser configurable!
+
+
 PhysicalBullet::PhysicalBullet(int init_coord_x, int init_coord_y):
         PhysicalObject(init_coord_x, init_coord_y, 5, 5),
         impacted(false), impacted_collision{0, CollisionTypeMap::NONE},
@@ -18,15 +22,15 @@ PhysicalBullet::PhysicalBullet(int init_coord_x, int init_coord_y):
         }*/
 
 void PhysicalBullet::shoot_up(){
-        this->add_speed(0, 5);
+        this->add_speed(0, BULLET_SPEED);
 }
 
 void PhysicalBullet::shoot_left(){
-        this->add_speed(-5, 0);
+        this->add_speed(-BULLET_SPEED, 0);
 }
 
 void PhysicalBullet::shoot_right(){
-        this->add_speed(5, 0);
+        this->add_speed(BULLET_SPEED, 0);
 }
 
 void PhysicalBullet::react_to_sides_collision(Collision collision) {

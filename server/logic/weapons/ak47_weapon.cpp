@@ -4,6 +4,9 @@
 
 #define KNOCK_BACK_DURATION 2
 #define KNOCK_BACK_MOMENTUM 10
+#define DMG_MULTIPLIER 5 // podria ser configurable. Por ahora no se considera especialmente util.
+
+
 
 AK47Weapon::AK47Weapon(int base_ammo): ammo(base_ammo*30), reload_time(15), dispersion_index(0), bullet_range(13) {}
 
@@ -22,7 +25,7 @@ bool AK47Weapon::shoot(ShootingDirection direction, std::vector <Bullet> &bullet
             int sign;
             dispersion_index%2 == 0 ? sign = 1 : sign = -1;
 
-            bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player));
+            bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player, DMG_MULTIPLIER);
             if (direction == ShootingDirection::UP){
                 player.add_speed(0, -10);
                 bullets.back().shoot_up();

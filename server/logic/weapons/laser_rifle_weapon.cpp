@@ -2,6 +2,10 @@
 #include "laser_rifle_weapon.h"
 #include <ctime>
 
+
+#define DMG_MULTIPLIER 4 // podria ser configurable. Por ahora no se considera especialmente util.
+
+
 LaserRifleWeapon::LaserRifleWeapon(int base_ammo): ammo(10*base_ammo), reload_time(15), bullet_range(30),
         dispersion_factor(5), last_shoot_time(0){}
 
@@ -40,7 +44,7 @@ bool LaserRifleWeapon::shoot(ShootingDirection direction, std::vector <Bullet> &
                 dispersion_factor = 5;
             }
 
-            bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::LASER_2, id_player, true));
+            bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::LASER_2, id_player,DMG_MULTIPLIER, true);
             if (direction == ShootingDirection::UP){
                 bullets.back().shoot_up();
             } else if (direction == ShootingDirection::LEFT){

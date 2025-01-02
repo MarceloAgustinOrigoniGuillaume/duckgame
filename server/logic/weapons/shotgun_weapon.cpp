@@ -2,6 +2,7 @@
 #include "shotgun_weapon.h"
 #include <ctime>
 #include <iostream>
+#define DMG_MULTIPLIER 6 // podria ser configurable. Por ahora no se considera especialmente util.
 
 ShotgunWeapon::ShotgunWeapon(int base_ammo): ammo(3* base_ammo), charging_time(2),
         init_charging_time(0), final_charging_time(0), charged(false), bullet_range(7){};
@@ -21,7 +22,7 @@ void ShotgunWeapon::shoot_shotgun(ShootingDirection direction,
         int sign;
         i%2 == 0 ? sign = 1 : sign = -1;
         int dispersion_index = i * sign;
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player));
+        bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player, DMG_MULTIPLIER);
         if (direction == ShootingDirection::UP){
             bullets.back().shoot_up();
             bullets.back().add_speed(dispersion_index, -dispersion_index/2);

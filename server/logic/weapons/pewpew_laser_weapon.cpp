@@ -1,6 +1,9 @@
 
 
 #include "pewpew_laser_weapon.h"
+#define DMG_MULTIPLIER 1 // podria ser configurable. Por ahora no se considera especialmente util.
+
+
 
 PewPewLaserWeapon::PewPewLaserWeapon(int base_ammo): ammo(12*base_ammo), bullet_range(35){}
 
@@ -17,27 +20,27 @@ bool PewPewLaserWeapon::shoot(ShootingDirection direction, std::vector <Bullet> 
                               PhysicalPlayer &player, bool &trigger, int id_player, std::vector<SoundEventType> &player_sounds, std::vector<std::unique_ptr<Throwable>> &throwables){
     trigger = false;
     if (ammo > 0){
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player));
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player));
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player));
+        Bullet& bullet1 = bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player, DMG_MULTIPLIER);
+        Bullet& bullet2 = bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player, DMG_MULTIPLIER);
+        Bullet& bullet3 = bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range,TypeDynamicObject::LASER, id_player, DMG_MULTIPLIER);
         if (direction == ShootingDirection::UP){
-            bullets[bullets.size() - 1].shoot_up();
-            bullets[bullets.size() - 2].shoot_up();
-            bullets[bullets.size() - 3].shoot_up();
-            bullets[bullets.size() - 1].add_speed(3, 0);
-            bullets[bullets.size() - 2].add_speed(-3, 0);
+            bullet3.shoot_up();
+            bullet2.shoot_up();
+            bullet1.shoot_up();
+            bullet3.add_speed(3, 0);
+            bullet2.add_speed(-3, 0);
         } else if (direction == ShootingDirection::LEFT){
-            bullets[bullets.size() - 1].shoot_left();
-            bullets[bullets.size() - 2].shoot_left();
-            bullets[bullets.size() - 3].shoot_left();
-            bullets[bullets.size() - 1].add_speed(0, 3);
-            bullets[bullets.size() - 2].add_speed(0, -3);
+            bullet3.shoot_left();
+            bullet2.shoot_left();
+            bullet1.shoot_left();
+            bullet3.add_speed(0, 3);
+            bullet2.add_speed(0, -3);
         } else if (direction == ShootingDirection::RIGHT){
-            bullets[bullets.size() - 1].shoot_right();
-            bullets[bullets.size() - 2].shoot_right();
-            bullets[bullets.size() - 3].shoot_right();
-            bullets[bullets.size() - 1].add_speed(0, 3);
-            bullets[bullets.size() - 2].add_speed(0, -3);
+            bullet3.shoot_right();
+            bullet2.shoot_right();
+            bullet1.shoot_right();
+            bullet3.add_speed(0, 3);
+            bullet2.add_speed(0, -3);
         }
         player_sounds.push_back(SoundEventType::PEWPEW_SHOT);
         ammo --;

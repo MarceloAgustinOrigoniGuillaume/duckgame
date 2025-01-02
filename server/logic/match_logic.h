@@ -67,7 +67,7 @@ public:
     
     
     void still_player(int id, PlayerMovingDir dir);
-    void damage_player(int id);
+    void damage_player(int id, int dmg);
     void add_player_speed(int id, int x, int y);
     void change_player_dir(int id, PlayerMovingDir dir);
 

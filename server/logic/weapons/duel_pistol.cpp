@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#define DMG_MULTIPLIER 10 // podria ser configurable. Por ahora no se considera especialmente util.
+
 DuelPistol::DuelPistol(int base_ammo):ammo(base_ammo), bullet_range(5){}
 
 void DuelPistol::get_weapon(TypeWeapon& type){
@@ -23,7 +25,7 @@ bool DuelPistol::shoot(ShootingDirection direction, std::vector <Bullet> &bullet
     if (ammo > 0){
         std::srand(std::time(nullptr));
         int dispersion_index = -3 + std::rand() % 7;
-        bullets.push_back(Bullet(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player));
+        bullets.emplace_back(bullet_position.x, bullet_position.y, bullet_range, TypeDynamicObject::PROJECTILE, id_player,DMG_MULTIPLIER);
         if (direction == ShootingDirection::UP){
             bullets.back().shoot_up();
             bullets.back().add_speed(dispersion_index, -dispersion_index);

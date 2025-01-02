@@ -3,6 +3,7 @@
 #include "grenade.h"
 #include <ctime>
 
+#define DMG_MULTIPLIER 3 // podria ser configurable. Por ahora no se considera especialmente util.
 
 
 Grenade::Grenade(int init_coord_x, int init_coord_y, int id_player_, int time):
@@ -63,13 +64,13 @@ int Grenade::activate(std::vector<Bullet> &bullets, std::vector<GameEvent>& even
 
     for (int i = 0; i < 6; i++) {
         (i < 3) ? j++ : j--;
-        bullets.push_back(Bullet(position.x, position.y, 4, TypeDynamicObject::GRENADE_PROJECTILE,0));
+        bullets.emplace_back(position.x, position.y, 4, TypeDynamicObject::GRENADE_PROJECTILE,0,DMG_MULTIPLIER);
         bullets.back().add_speed(-3 + i, j);
     }
     j = -1;
     for (int i = 0; i < 6; i++) {
         (i < 3) ? j-- : j++;
-        bullets.push_back(Bullet(position.x, position.y, 4, TypeDynamicObject::GRENADE_PROJECTILE, 0));
+        bullets.emplace_back(position.x, position.y, 4, TypeDynamicObject::GRENADE_PROJECTILE, 0,DMG_MULTIPLIER);
         bullets.back().add_speed(-3 + i, j);
     }
 

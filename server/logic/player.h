@@ -47,6 +47,7 @@ class Player {
 	    std::vector<SoundEventType> player_sounds; // cppcheck-suppress unusedStructMember
         bool trigger; // cppcheck-suppress unusedStructMember
         int cheat_weapon_index; // cppcheck-suppress unusedStructMember
+        void shoot(std::vector <Bullet> &bullets, std::vector<std::unique_ptr<Throwable>> &throwables);
 
     public:
         Player(int id, int initial_x, int initial_y,const Configuration& configs);
@@ -61,7 +62,6 @@ class Player {
         void still();
         void update(const MatchMap& colition_map, std::vector <Bullet> &bullets, std::vector<std::unique_ptr<Throwable>> &throwables);
         void stop_moving_x();
-        void shoot(std::vector <Bullet> &bullets, std::vector<std::unique_ptr<Throwable>> &throwables);
         bool has_equipment();
         bool pick_up_item(std::vector<SpawnPlace> &spawn_places, std::vector<DroppedItem> &dropped_items);
         void drop_item(std::vector<DroppedItem> &dropped_items);

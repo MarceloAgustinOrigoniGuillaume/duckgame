@@ -72,8 +72,8 @@ void Player::update(const MatchMap& colition_map, std::vector <Bullet> &bullets,
         
         if (move_action != TypeMoveAction::STAY_DOWN){            
             this->update_shooting_direction();
-            if (trigger){
-                    this->shoot(bullets, throwables);
+            if (trigger && weapon != nullptr){
+                this->shoot(bullets, throwables);
             }
         }
         
@@ -191,37 +191,34 @@ void Player::take_damage(int dmg){
 }
 
 void Player::shoot(std::vector <Bullet> &bullets, std::vector<std::unique_ptr<Throwable>> &throwables){
-    if (weapon != nullptr){
-        Tuple bullet_position = this->get_map_position();
-        Tuple player_dimension = this->get_dimension();
+    Tuple bullet_position = this->get_map_position();
+    Tuple player_dimension = this->get_dimension();
 
-        if (shooting_direction == ShootingDirection::UP){
-            bullet_position.x += player_dimension.x / 2;
-            bullet_position.y += player_dimension.y  + 5;
+    if (shooting_direction == ShootingDirection::UP){
+        bullet_position.x += player_dimension.x / 2;
+        bullet_position.y += player_dimension.y  + 5;
+    }
+    if (shooting_direction == ShootingDirection::LEFT){
+        bullet_position.x -= 5;
+        bullet_position.y += player_dimension.y / 2;
+    }
+    if (shooting_direction == ShootingDirection::RIGHT){
+        bullet_position.x += player_dimension.x + 5;
+        bullet_position.y += player_dimension.y / 2;
+    }
+    if (weapon->shoot(this->shooting_direction, bullets, bullet_position,
+                      this->object, trigger, id, player_sounds, throwables)){
+        if (aim_up){
+            doing_action=TypeDoingAction::SHOOTING_UP;
+        } else {
+            doing_action=TypeDoingAction::SHOOTING;
         }
-        if (shooting_direction == ShootingDirection::LEFT){
-            bullet_position.x -= 5;
-            bullet_position.y += player_dimension.y / 2;
+        
+        player_sounds.push_back(weapon->shoot_sound());
+        
+        if(weapon->get_ammo() == 0){
+            weapon.reset(); // Reset ! a que se quedo sin balas!
         }
-        if (shooting_direction == ShootingDirection::RIGHT){
-            bullet_position.x += player_dimension.x + 5;
-            bullet_position.y += player_dimension.y / 2;
-        }
-        if (weapon->shoot(this->shooting_direction, bullets, bullet_position,
-                          this->object, trigger, id, player_sounds, throwables)){
-            if (aim_up){
-                doing_action=TypeDoingAction::SHOOTING_UP;
-            } else {
-                doing_action=TypeDoingAction::SHOOTING;
-            }
-            
-            player_sounds.push_back(weapon->shoot_sound());
-            
-            if(weapon->get_ammo() == 0){
-                weapon.reset(); // Reset ! a que se quedo sin balas!
-            }
-        }
-
     }
 }
 
