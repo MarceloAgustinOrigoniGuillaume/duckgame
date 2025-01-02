@@ -2,7 +2,7 @@
 #include "physical_bullet.h"
 #include <iostream>
 
-#define BULLET_SPEED 8 // podria ser configurable!
+#define BULLET_SPEED 10 // podria ser configurable!
 
 
 PhysicalBullet::PhysicalBullet(int init_coord_x, int init_coord_y):
