@@ -26,21 +26,21 @@ void ObjectDrawer::draw(const DynamicObjDTO& object) {
             renderer.Copy(
                     textures.getTexture("/weapons/chainBullet.png"), SDL2pp::Rect(0, 0, 3, 8),
                     SDL2pp::Rect(camera.getScreenX(object.pos.x), camera.getScreenY(-object.pos.y + 10),
-                                 camera.getScaledSize(3), camera.getScaledSize(8)));
+                                 camera.getScaledSize(4), camera.getScaledSize(10)));
             break;
 
         case TypeDynamicObject::LASER:
             renderer.Copy(
                     textures.getTexture("/weapons/laserBeam.png"), SDL2pp::Rect(0, 0, 1, 8),
                     SDL2pp::Rect(camera.getScreenX(object.pos.x), camera.getScreenY(-object.pos.y + 10),
-                                 camera.getScaledSize(1), camera.getScaledSize(8)));
+                                 camera.getScaledSize(2), camera.getScaledSize(10)));
             break;
         
         case TypeDynamicObject::LASER_2:
             renderer.Copy(
                     textures.getTexture("/weapons/yellowLaser.png"), SDL2pp::Rect(0, 0, 1, 5),
                     SDL2pp::Rect(camera.getScreenX(object.pos.x), camera.getScreenY(-object.pos.y + 10),
-                                 camera.getScaledSize(1), camera.getScaledSize(8)));
+                                 camera.getScaledSize(2), camera.getScaledSize(10)));
             break;
 
         case TypeDynamicObject::HELMET:
